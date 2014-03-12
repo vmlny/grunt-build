@@ -12,7 +12,7 @@ module.exports = function(grunt) {
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Wipe out previous builds.
     clean: {
-      default:{
+      dev:{
         files:[
           {
             src:[
@@ -101,9 +101,9 @@ module.exports = function(grunt) {
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // bake in includes
     bake: {
-        build: {
+        dev: {
             files: {
-                "files/index-baked.html": "files/index.html"
+                "files/index.html": "files/index-to-bake.html"
             }
         }
     },
@@ -125,14 +125,14 @@ module.exports = function(grunt) {
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Create build-specific HTML
     processhtml: {
-      default: {
+      dev: {
         files: {
-          "../htdocs/index-dev.html": ["files/index-baked.html"]
+          "../htdocs/index-dev.html": ["files/index.html"]
         }
       },
-      build: {
+      prod: {
         files: {
-          "../htdocs/index.html": ["files/index-baked.html"]
+          "../htdocs/index.html": ["files/index.html"]
         }
       },
     },
@@ -148,16 +148,14 @@ module.exports = function(grunt) {
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Move assets during builds.
     copy: {
-      default: {
+      dev: {
         files: [
           {
             expand: true,
             cwd: "files/ui/",
             src: [
                   "img/**",
-                  "fonts/**",
-                  "css/**",
-                  "js/**"
+                  "!img/sprites"
             ],
             dest: "../htdocs/ui/"
           },
@@ -226,29 +224,33 @@ module.exports = function(grunt) {
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     watch:{
-      default:{
+      dev:{
         files:[
                 'files/ui/css/*.css',
+                '!files/ui/css/sprites.css',
                 'files/ui/js/*.js',
                 'files/ui/js/**/*.js',
                 'files/inc/**.inc',
                 'files/inc/**/*.inc',
                 'files/**.html',
+                '!files/index.html',
                 'files/ui/img/sprites/*.png'
               ],
-        tasks:['default']
+        tasks:'dev'
       },
-      build:{
+      prod:{
         files:[
                 'files/ui/css/*.css',
+                '!files/ui/css/sprites.css',
                 'files/ui/js/*.js',
                 'files/ui/js/**/*.js',
                 'files/inc/**.inc',
                 'files/inc/**/*.inc',
                 'files/**.html',
+                '!files/index.html',
                 'files/ui/img/sprites/*.png'
               ],
-        tasks:['build']
+        tasks:'prod'
       }
     }
   });
@@ -273,22 +275,23 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-processhtml");
   grunt.loadNpmTasks('grunt-spritesmith');
 
-  grunt.registerTask("default", [
+  grunt.registerTask("dev", [
                                   "clean",
                                   "sprite",
                                   "concat",
                                   "bake",
-                                  "processhtml:default",
+                                  "processhtml:dev",
                                   "copy"
                                 ]);
-  grunt.registerTask("build", [
+  grunt.registerTask("prod", [
                                   "clean",
                                   "sprite",
                                   "concat",
-                                  "bake",
                                   "cssmin",
                                   "uglify",
-                                  "processhtml:build",
+                                  "bake",
+                                  "processhtml:dev",
+                                  "processhtml:prod",
                                   "copy"
                                 ]);
 };
