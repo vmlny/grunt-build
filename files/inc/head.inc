@@ -1,9 +1,19 @@
-<!-- sitewide <link> (read media specific css [print/screen/etc.]) and meta elements go here -->
+<!-- BEGIN head.inc -->
+        <!-- build:remove
 
-<!-- automatically generated css for concatenated/minified css -->
-<!-- build:css:dev ui/css/all.css --><!-- /build -->
-<!-- build:css:prod ui/css/all_min.css --><!-- /build -->
+            sitewide <link> (read media specific css [print/screen/etc.]) 
+            and meta elements go here
+    
+            concatenated and minified files are referenced below based on build name
 
-<!-- build:remove -->
-    <!-- non concatenated local environment css goes here -->
-<!-- /build -->
+            non-concatenated files are included below that within the build:remove block
+        --><!-- /build -->
+        
+        <!-- build:css:debug ui/css/all.css --><!-- /build -->
+        <!-- build:css:release ui/css/all_min.css --><!-- /build -->
+
+        <!-- build:remove:debug,release -->
+        
+        <!-- /build -->
+        
+        <!-- END head.inc -->
