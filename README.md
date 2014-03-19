@@ -1,71 +1,68 @@
-grunt-build
-===========
+#grunt-build
+==============
 
-Getting Started:
-================
+## Getting Started
+This configuration requires Grunt `~0.4.0`
 
-Install node and npm use npm install (may need sudo depending on your setup...)
-to get all dependencies installed.
+If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install the required configuration's plugins with this command:
 
-As this is a packaging code project I won't get into support for your nodejs npm or grunt setup here. 
+```shell
+npm install
+```
 
-Check these sources if you are having problems:
-
-http://nodejs.org/download/
-
-https://www.npmjs.org/
-
-http://gruntjs.com/getting-started
-
-https://github.com/gruntjs/grunt-cli
-
-http://www.google.com
+Once the plugins have been installed, you can use the following commands from within the root directory
 
 
-Commands:
-=========
+## Commands:
 
-__grunt or grunt dev__ triggers a build to the ../htdocs directory without minification
+__grunt__ or __grunt default__ triggers spriting, includes and linting within the `files/` directory. The purpose of this command is for local development where optimization would slow down round-trips. Before running a `debug` or `release` build, use this process to verify that all code is error-free and conforms to coding standards.
 
-__grunt prod__ triggers a build to the ../htdocs directory with minification
+__grunt debug__ triggers a build to the `../htdocs` directory without minification, but with image optimization. Use these builds for dev server pushes where debugging code would be desirable
 
-__watch or watch:dev__ triggers a default build when html, js, css, or sprite files are modified. See the gruntfile for specifics
+__grunt release__ triggers a build to the `../htdocs` directory with minification. Use these builds for stage/test/QA/production releases where the final output of the files is expected.
 
-__watch:prod__ same as above but for the minification build
+__watch__ or __watch:default__ triggers __grunt:default__ when html, inc, js, css, or sprite files located where the file structure dictates are modified. See the [gruntfile](Gruntfile.js) for specifics.
 
-for additional commands (copy, concat, bake, processhtml, sprite etc.) see the gruntfile
+No watch is provided for `debug` or `release` builds due to potential failure triggered by long processing times and high numbers of files to copy and image assets to optimize.
+
+for additional commands (`copy`, `concat`, `processhtml`, `sprite` etc.) see the [gruntfile](Gruntfile.js)
 
 
-File Structure:
-===================
+## File Structure:
+==================
+
+The purpose of this project is to provide a build process within VML's SVN structure. That said, since traditionally the `trunk/htdocs/` folder is deployed, it serves as the output bin folder for this project. When using this code, create a `trunk/frontend` directory and put the contents of the project clone there. The process will then build the deployment code to the `trunk/htdocs` folder.
+
     .
-    ├── frontend
-    │      └── files
-    │           ├── inc
-    │           └── ui
-    │                ├── css
-    │                ├── img
-    │                     └── sprites
-    │                └── js
-    │                     ├── v
-    │                     └── plugins
+    ├─ frontend (grunt-build root folder)
+    │    ├─ files
+    │    │    ├─ inc
+    │    │    └─ ui
+    │    │       ├─ css
+    │    │       ├─ img
+    │    │       │   └─ sprites
+    │    │       └─ js
+    │    │           ├─ v
+    │    │           └─ plugins
+    │    │
+    │    ├─ Gruntfile.js
+    │    └─ package.json
     │
-    └── htdocs (output files mirror of src/front-end/files with concatenated js/css)
+    └─ htdocs (output files mirror of src/front-end/files with concatenated js/css)
 
 
-__frontend/files/inc__ global includes are stored here. These are added statically via bake to files that include them. Grunt is configured to accept these with either .html or .inc extensions.
+__`frontend/files/inc`__ Includes are expected to be stored here. These are added statically via processHTML to files that require them. In the interest of quick builds, files that require includes should be named with the extension prefix .inc. For example: `index.inc.html`. Without the prefix, files are not processed. All includes that are referenced regardless of where they are located are referenced from the `files/` directory. So, `inc/scripts.inc` not `files/inc/scripts.inc` or `../../scripts.inc`. output files have `.html` as an extension. __WARNING__ for this realson, be sure not to name HTML files with the same name as files using the `.inc.html` extension. For example `landing_page.inc.html` and `landing_page.html`. Grunt in this case will overwrite `landing_page.html`. All non-`.inc.html.html` files are copied to `../htdocs` in `debug` and `release` builds.
 
-__frontend/files/ui__ skinning assets and application javascript are stored here
+__`frontend/files/ui`__ theming assets (css, images, fonts) and application javascript are stored here. In the interest of separation of theme and content, it is suggested that images as content and multi-media be stored elsewhere. Modify imagemin configuration in the [gruntfile](Gruntfile.js) if needed.
 
-__frontend/files/ui/img__ images consumend by the css as "themeing elements" should live here
+__`frontend/files/ui/img`__ images consumend by the css as "themeing elements" should live here. Images found here will be optimized in `debug` and `release` builds.
 
-__frontend/files/ui/img/sprites__ sprite images housed here are compiled into frontend/files/ui/img/spritesheet.png
+__`frontend/files/ui/img/sprites`__ sprite images housed here are compiled into `files/ui/img/spritesheet.png`. This folder is not included in `debug` and `release` builds.
 
-__frontend/files/ui/css__ self explanitory. A simple reset is included here for testing. Feel free to replace it if you feel strongly about it. By default all css files here are concatenated and minified. To specify the order these are added to the concatenated file, edit the "Concatenate" portion of the gruntfile. Also, for media specific or "one-off" files, exclude them in the "concatenate" section and add them to the "copy" or "minify" tasks
+__`frontend/files/ui/css`__ self explanitory. A simple CSS reset is included here for testing. Feel free to replace it if you feel strongly about it. By default all css files here are concatenated and minified. To specify the order these are added to the concatenated file, edit the "Concat" portion of the [gruntfile](Gruntfile.js). Also, for media specific or "one-off" files, exclude them from the "Concat" section and add them to the "Copy" or "Minification" sections.
 
-__frontend/files/ui/js__ javascript directory. Feel free to create additional organization here -- may require some configuration in the gruntfile. By default all js files here are concatenated and uglified. To specify the order these are added to the concatenated file, edit the "Concatenate" portion of the gruntfile. Also, for polyfills or platform/page specific "one-offs", the files will need to be excluded in the "concatenate" section and added to the "copy" or "uglify"
+__`frontend/files/ui/js`__ javascript directory. Feel free to create additional organization here -- may require some configuration in the [gruntfile](Gruntfile.js). By default all js files here are concatenated and uglified. To specify the order these are added to the concatenated file, edit the "Concat" portion of the [gruntfile](Gruntfile.js). Also, for polyfills or platform/page specific "one-offs", the files will need to be excluded in the "Concat" section and added to the "Copy" or "Uglification".
 
-__frontend/files/ui/js/v__ javascript 3rd party libraries and frameworks go here. See above for caveats.
+__`frontend/files/ui/js/v`__ javascript 3rd party libraries and frameworks go here. See above for caveats.
 
-__frontend/files/ui/js/plugins__ javascript plugins for libraries 3rd or 1st party should be here. See above for caveats.
-
+__`frontend/files/ui/js/plugins`__ javascript plugins for libraries 3rd or 1st party should be here. See above for caveats.

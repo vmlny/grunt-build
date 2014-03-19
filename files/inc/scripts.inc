@@ -1,8 +1,10 @@
-<!-- grunt generated concatenated/minified scripts referenced here -->
+<!-- BEGIN scripts.inc -->
 
-<!-- build:js:dev ui/js/app.js --><!-- /build -->
-<!-- build:js:prod ui/js/app_min.js --><!-- /build -->
+        <!-- build:js:debug ui/js/app.js --><!-- /build -->
+        <!-- build:js:release ui/js/app_min.js --><!-- /build -->
 
-<!-- build:remove -->
-    <!-- local non-concatenated specialized scripts go here -->
-<!-- /build -->
+        <!-- build:remove:debug,release -->
+            <!-- local non-concatenated specialized scripts go here -->
+        <!-- /build -->
+
+        <!-- END scripts.inc -->
