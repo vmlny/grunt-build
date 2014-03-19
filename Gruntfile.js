@@ -45,11 +45,14 @@ module.exports = function(grunt) {
             cwd: "files/",
             src: [
                   "**",
+                  // images are transferred in imagemin process
                   "!ui/img/**",
                   "!ui/imagemin/**",
+                  // includes should be transcribed and are not needed in releases
                   "!inc",
                   "!*.inc",
                   "!**/*.inc",
+                  // processHTML should transcribe all HTML files
                   "!*.html",
                   "!**/*.html"
             ],
@@ -108,19 +111,24 @@ module.exports = function(grunt) {
     csslint: {
       default: {
         options: {
-          import: 2
+          import: 2,
+          // lax csslint for spritesheet
+          'duplicate-background-images':false,
+          'zero-units':false
         },
         src: ['files/**/*.css']
       }
   },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  ..|'''.|  .|'''.|   .|'''.|     '||'       ||             .   
-.|'     '   ||..  '   ||..  '      ||       ...  .. ...   .||.  
-||           ''|||.    ''|||.      ||        ||   ||  ||   ||   
-'|.      . .     '|| .     '||     ||        ||   ||  ||   ||   
- ''|....'  |'....|'  |'....|'     .||.....| .||. .||. ||.  '|.' 
-
+   ||        '||'  '||'  ||             .   
+  ...  ....   ||    ||  ...  .. ...   .||.  
+   || ||. '   ||''''||   ||   ||  ||   ||   
+   || . '|..  ||    ||   ||   ||  ||   ||   
+   || |'..|' .||.  .||. .||. .||. ||.  '|.' 
+.. |'                                       
+ ''
+ 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     jshint: {
       default: {
@@ -435,6 +443,7 @@ images based factors like edge contrast and color depth specific to each image
                                   "sprite",
                                   "imagemin",
                                   "copy",
+                                  "clean:imagemin",
                                   "concat",
                                   "cssmin",
                                   "uglify",

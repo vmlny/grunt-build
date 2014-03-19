@@ -1,6 +1,7 @@
 {
   "name": "vml_grunt_build",
   "version": "1.0.0",
+  "repository": "https://github.com/vmlny/grunt-build",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9",
