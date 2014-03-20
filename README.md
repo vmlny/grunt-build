@@ -66,3 +66,15 @@ __`frontend/files/ui/js`__ javascript directory. Feel free to create additional 
 __`frontend/files/ui/js/v`__ javascript 3rd party libraries and frameworks go here. See above for caveats.
 
 __`frontend/files/ui/js/plugins`__ javascript plugins for libraries 3rd or 1st party should be here. See above for caveats.
+
+## Spriting:
+
+Name the image files the same as the selectors they will be used for. the grunt spritesmith task will use this to generate the CSS selector for each sprite. for instance `a.nav-item.png` will become 
+```css
+a.nav-item{
+    background-image:...
+}
+```
+To avoid file-system restrictions, in order to start a selector with a class name, use an underscore `_` instead of a dot `.` ONLY IN THE BEGINNING i.e. for the selector: `.class1 .class2` name your .png: `_class1 .class2.png`.
+
+Likewise, for pseudo classes, use a carat `^` in the filename instead of a colon `:`. For the selector: `a:hover` use: `a^hover.png`. In *nix environments colons are permitted in filenames, however this is forbidden in Windows and is generally confusing when using a network protocol (SSH/FTP etc.).
