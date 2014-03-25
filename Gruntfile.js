@@ -140,6 +140,7 @@ module.exports = function(grunt) {
           nonbsp: true,
           undef:true,
           trailing:true,
+          //smarttabs:true,
 
           // relaxing
           gcl:true,

@@ -15,7 +15,7 @@ Once the plugins have been installed, you can use the following commands from wi
 
 ## Commands:
 
-__grunt__ or __grunt default__ triggers spriting, includes and linting within the `files/` directory. The purpose of this command is for local development where optimization would slow down round-trips. Before running a `debug` or `release` build, use this process to verify that all code is error-free and conforms to coding standards.
+__grunt__ or __grunt default__ triggers spriting, includes and linting within the `files/` directory. The purpose of this command is for local development where optimization would slow down round-trips. Before running a `debug` or `release` build, use this process to verify that all code is error-free and conforms to coding standards. For linting/validation configuration options, see: [jshint](http://www.jshint.com/docs/options/), [cssLint](https://github.com/stubbornella/csslint/wiki/Rules), [HTML Validator](https://www.npmjs.org/package/grunt-html-validation).
 
 __grunt debug__ triggers a build to the `../htdocs` directory without minification, but with image optimization. Use these builds for dev server pushes where debugging code would be desirable
 
@@ -51,7 +51,7 @@ The purpose of this project is to provide a build process within VML's SVN struc
     └─ htdocs (output files mirror of src/front-end/files with concatenated js/css)
 
 
-__`frontend/files/inc`__ Includes are expected to be stored here. These are added statically via processHTML to files that require them. In the interest of quick builds, files that require includes should be named with the extension prefix .inc. For example: `index.inc.html`. Without the prefix, files are not processed. All includes that are referenced regardless of where they are located are referenced from the `files/` directory. So, `inc/scripts.inc` not `files/inc/scripts.inc` or `../../scripts.inc`. output files have `.html` as an extension. __WARNING__ for this realson, be sure not to name HTML files with the same name as files using the `.inc.html` extension. For example `landing_page.inc.html` and `landing_page.html`. Grunt in this case will overwrite `landing_page.html`. All non-`.inc.html.html` files are copied to `../htdocs` in `debug` and `release` builds.
+__`frontend/files/inc`__ Includes are expected to be stored here. These are added statically via processHTML to files that require them. In the interest of quick builds, files that require includes should be named with the extension prefix .inc. For example: `index.inc.html`. Without the prefix, files are not processed. All includes that are referenced regardless of where they are located are referenced from the `files/` directory. So, `inc/scripts.inc` not `files/inc/scripts.inc` or `../../scripts.inc`. output files have `.html` as an extension. __WARNING__ for this reason, be sure not to name HTML files with the same name as files using the `.inc.html` extension. For example `landing_page.inc.html` and `landing_page.html`. Grunt in this case will overwrite `landing_page.html`. All non-`.inc.html.html` files are copied to `../htdocs` in `debug` and `release` builds.
 
 __`frontend/files/ui`__ theming assets (css, images, fonts) and application javascript are stored here. In the interest of separation of theme and content, it is suggested that images as content and multi-media be stored elsewhere. Modify imagemin configuration in the [gruntfile](Gruntfile.js) if needed.
 
