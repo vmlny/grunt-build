@@ -394,9 +394,78 @@ images based factors like edge contrast and color depth specific to each image
                 'files/ui/img/sprites/*.png'
               ],
         tasks:'default'
+      },
+      debug:{
+        files:[
+                'files/ui/css/*.css',
+                '!files/ui/css/sprites.css',
+                'files/ui/js/*.js',
+                'files/ui/js/**/*.js',
+                'files/inc/**.inc',
+                'files/inc/**/*.inc',
+                'files/**.html',
+                '!files/index.html',
+                'files/ui/img/sprites/*.png'
+              ],
+        tasks:'debug'
       }
+    },
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+'||'  '||' |''||''| |''||''| '||''|.               
+ ||    ||     ||       ||     ||   ||              
+ ||''''||     ||       ||     ||...|'              
+ ||    ||     ||       ||     ||                   
+.||.  .||.   .||.     .||.   .||.                  
+                                                                                                  
+ .|'''.|                                           
+ ||..  '    ....  ... ..  .... ...   ....  ... ..  
+  ''|||.  .|...||  ||' ''  '|.  |  .|...||  ||' '' 
+.     '|| ||       ||       '|.|   ||       ||     
+|'....|'   '|...' .||.       '|     '|...' .||.                                                     
+                                                   
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+  'http-server': {
+    default: {
+
+            // the server root directory
+            root: 'files/',
+
+            port: 3000,
+            // port: function() { return 8282; }
+
+            host: "127.0.0.1",
+
+            cache: 0,
+            showDir : true,
+            autoIndex: true,
+            defaultExt: "html",
+
+            // run in parallel with other tasks
+            runInBackground: false
+
+        },
+    release: {
+
+            // the server root directory
+            root: '../htdocs/',
+
+            port: 3000,
+            // port: function() { return 8282; }
+
+            host: "127.0.0.1",
+
+            cache: 0,
+            showDir : true,
+            autoIndex: true,
+            defaultExt: "html",
+
+            // run in parallel with other tasks
+            runInBackground: false
+
+        } 
     }
-  });
+});
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 |''||''|                '||             
@@ -420,6 +489,7 @@ images based factors like edge contrast and color depth specific to each image
   grunt.loadNpmTasks("grunt-processhtml");
   grunt.loadNpmTasks('grunt-spritesmith');
   grunt.loadNpmTasks('grunt-html-validation');
+  grunt.loadNpmTasks('grunt-http-server');
 
 
   grunt.registerTask("default", [

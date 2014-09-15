@@ -21,7 +21,13 @@ __grunt debug__ triggers a build to the `../htdocs` directory without minificati
 
 __grunt release__ triggers a build to the `../htdocs` directory with minification. Use these builds for stage/test/QA/production releases where the final output of the files is expected.
 
-__watch__ or __watch:default__ triggers __grunt:default__ when html, inc, js, css, or sprite files located where the file structure dictates are modified. See the [gruntfile](Gruntfile.js) for specifics.
+__grunt watch__ or __grunt watch:default__ triggers __grunt:default__ when html, inc, js, css, or sprite files located where the file structure dictates are modified. See the [gruntfile](Gruntfile.js) for specifics.
+
+__grunt watch:debug__ triggers __grunt:debug__ when html, inc, js, css, or sprite files located where the file structure dictates are modified. See the [gruntfile](Gruntfile.js) for specifics.
+
+__grunt http-server__ or __http-server:default__ runs an http-server on localhost:3000 with it's root in the `files` directory
+
+__grunt http-server:release__ runs an http-server on localhost:3000 with it's root in `../htdocs` directory
 
 No watch is provided for `debug` or `release` builds due to potential failure triggered by long processing times and high numbers of files to copy and image assets to optimize.
 
