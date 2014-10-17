@@ -268,7 +268,7 @@ module.exports = function(grunt) {
         engine: 'pngsmith',
 
         //custom path for the css file to point to the image
-        imgPath:'../../img/spritesheet.png',
+        imgPath:'../img/spritesheet.png',
 
         cssOpts: {
           // used for CSS class naming
@@ -338,6 +338,8 @@ images based factors like edge contrast and color depth specific to each image
                               ],
       // css
       "../htdocs/ui/css/all.css": [
+                                "files/ui/css/reset.css",
+                                "files/ui/css/sprites.css",      
                                 "files/ui/css/*.css"
                               ]
     },
