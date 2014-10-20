@@ -8,7 +8,9 @@
 
             non-concatenated files are included below that within the build:remove block
         --><!-- /build -->
-        
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <!-- build:css:debug ui/css/all.css --><!-- /build -->
         <!-- build:css:release ui/css/all_min.css --><!-- /build -->
 
