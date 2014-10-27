@@ -458,8 +458,10 @@ images based factors like edge contrast and color depth specific to each image
             'files/ui/js/**/*.js',
             'files/inc/**.inc',
             'files/inc/**/*.inc',
-            'files/**.html',
-            '!files/index.html',
+            '!files/*.html',
+            '!files/**/*.html',
+            'files/*.inc.html',
+            'files/**/*.inc.html',
             'files/ui/img/sprites/*.png'
           ],          
         tasks:['release']
