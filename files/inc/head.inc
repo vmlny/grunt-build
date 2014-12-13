@@ -17,5 +17,6 @@
         <!-- build:remove:debug,release -->
         
         <!-- /build -->
-        
+        <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Orbitron:400,500,700,900' rel='stylesheet' type='text/css'>
         <!-- END head.inc -->
