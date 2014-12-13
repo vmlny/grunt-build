@@ -1,0 +1,251 @@
+/**
+	General Styles
+*/
+.right{float: right;}
+.left{float:left;}
+.hide{
+	display: none;
+}
+.show{
+	display: block;
+}
+.invisible{
+	visibility: hidden;
+}
+.visible{
+	visibility: visible;
+}
+body{
+	background-color: #040f27;
+}
+.container{
+	background-image: url('/ui/img/homepageBackground.jpg');
+	width: 1020px;
+	margin: 0 auto;
+	height: 100%;
+	min-height: 700px;
+	padding-top: 230px;
+}
+
+.view{
+	margin: 0 30px;
+}
+
+/**left coloumn*/
+.videocontainer{
+	width: 640px;
+	height: 360px;
+	border:3px solid #527b86;
+	position: relative;
+}
+table{
+	position: absolute;
+	top: 10px;
+	left: 8px;
+}
+td{
+	height: 158px;
+	width: 195px;
+	border: solid 5px white;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 30px;
+	color: #fff;
+}
+td.taken{
+	background-color: rgba(255,0,0,.2);
+	font-size: 0px;
+}
+
+/* right coloumn*/
+.controls{
+	width: 300px;
+	margin-left: 6px;
+}
+.instruction{
+	color: #b5d5db;
+	font-size: 25px;
+	text-align: center;
+}
+.activateRobot{
+	background-image: url('/ui/img/button.png');
+	width: 333px;
+	height: 128px;
+	display: block;
+	margin: 0 auto;
+}
+.activateRobot:hover{
+	background-image: url('/ui/img/buttonHover.png');
+}
+
+/*Card section*/
+.card{
+	margin: 50px 25px;
+}
+.card .status{
+	margin-left: 10px;
+	color: #fff;
+}
+.card .message,
+.card .message span{
+	width: 100px;
+	color: #fff;
+	font-family: 'Pacifico', cursive;
+	font-size: 24px;
+	display: inline;
+}
+.card .message span{
+
+	text-decoration: underline;
+}
+
+/*Modal*/
+.modal{
+	width: 100%;
+	height: 200%;
+	position: fixed;
+	display: none;
+	background: rgba(0,0,0,.8);
+	top: 0px;
+}
+.modal .content{
+	width: 595px;
+	margin: 30px auto 0;
+	display: block;
+	background-color: rgba(82,123,134,.5);
+	text-align: center;
+	border:#527b86 2px solid;
+	position: relative;
+}
+.modal .content p{
+	font-size: 40px;
+	margin: 25px 0;
+	font-family: 'Orbitron', sans-serif;
+	color:#b5d5db;
+	letter-spacing: 3px;
+}
+.modal #card{
+	width: 420px;
+	height: 410px;
+	border:#527b86 2px solid;
+}
+.modal .closeModal{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	font-family: 'Orbitron', sans-serif;
+	color: #b5d5db;
+	font-size: 21px;
+	background-color: rgba(69,93,99,.5);
+
+}
+.modal .share{
+	margin: 20px 0;
+}
+.modal .share p{
+	font-size: 18px;
+	text-align: center;
+}
+.modal .share #download{
+	margin: 15px auto;
+	font-size: 25px;
+	color:#b5d5db;
+	display: block;
+	font-family: 'Orbitron', sans-serif;
+	text-decoration: underline;
+}
+.modal .share #download:hover{
+	color:#fff;
+}
+.modal .fb_iframe_widget{
+	top: -5px;
+}
+
+/**credits*/
+.credits{
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	z-index: 100;
+	background-color: rgba(35,52,73,.8);
+}
+.credits p{
+	width: 960px;
+	margin: 20px auto;
+	color:#708994;
+	text-align: center;
+}
+/* Carousel */
+.carousel{
+	position: relative;
+	width: auto;
+	height: 165px;
+}
+.carousel .carouselList{
+    position: relative;
+    overflow: hidden;
+    width: 165px;
+    height: 165px;
+    margin: 20px auto 0;
+}
+.carousel .loader{
+	visibility: hidden;
+	width: 100%;
+}
+.carousel .carouselList li {
+    position: absolute;
+    display: inline-block;
+    width: 165px;
+    left: 100%;
+    min-height: 100%;
+}
+.carousel .carouselList li .videoCarousel,
+.carousel .carouselList li img{
+	width: 100%;
+}
+.carousel li.show{
+	left: 0%; 
+}
+.carousel .pageContainer{
+	display:none;
+	position: absolute;
+}
+.carousel a.backButton,.carousel a.nextButton{
+	position: absolute;
+	top: 47px;
+	padding: 0px;
+	font-size: 41px;
+	color:red;
+	width: 10px;
+	height: 10px;
+}
+.carousel a.backButton{
+	left: 20px;
+}
+.carousel a.nextButton{
+	right: 20px;
+}
+.carousel .pageContainer {
+	height: 15px;
+	position: absolute;
+	bottom: 45px;
+	left: 48%;
+	z-index: 100;
+}
+.carousel .pageContainer li{
+	float: left;
+	list-style: none;
+	-ms-transform: translateZ(0);
+	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
+	-ms-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+.carousel .pageContainer a{
+	display: inline-block;
+	font-size: 0px;
+	margin: 0 6px;
+	padding: 0px;
+}
+

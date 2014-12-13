@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Holiday Notebot</title>
+
+        <!-- BEGIN head.inc -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <!-- build:css:debug ui/css/all.css --><!-- /build -->
+        <!-- build:css:release ui/css/all_min.css --><!-- /build -->
+
+        <!-- build:remove:debug,release -->
+        
+        <!-- /build -->
+        <link href='http://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Orbitron:400,500,700,900' rel='stylesheet' type='text/css'>
+        <!-- END head.inc -->
+    </head>
+    <body>
+        <article class="container">
+            <section class="view clearfix">
+                <div class="videocontainer left">
+                    <table class="hide">
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="invisible"></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <video id="robotStream" width="640px" height="360px" src="" type="video/mp4"></video>
+                </div>
+                <section class="left controls">
+                    <p class="instruction">CHOOSE TEMPLATE</p>
+                    <div id="template" class="carousel clearfix" data-millisecondsdelay="2000">
+                        <a  class="backButton"><</a>
+                        <ul class="carouselList">
+                          <!--   
+
+
+
+                                CHANGE IMAGES  HERE!! 
+
+
+
+
+                          -->
+                            <li class="show"><a ><img src="ui/img/how-to-draw-santa-and-rudolph-santa-and-rudolph.jpg" alt=""></a></li>
+                            <li><a ><img src="ui/img/termisanta.jpg" alt=""></a></li>
+                            <li><a ><img src="ui/img/YR_SantaRobotCircuit.jpg" alt=""></a></li>
+                        </ul>
+                        <a  class="nextButton">></a>
+                    </div>
+                    <a  class="activateRobot"></a>
+                </section>
+            </section>
+            <section class="card clearfix">
+                <div class="left">
+                    <img id="selection" width ="165px" height="165px" src="ui/img/termisanta.jpg" alt="">
+                </div>
+                <div class="status left">
+                    <p>Executing holiday greeting protocol...</p>
+                    <p class="message">                        
+                        <span class="word1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;<span class="word2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>,&nbsp;you&nbsp<span class="word4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;<span class="word5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>!
+                    </p>
+                </div>
+            </section>
+        </article>
+        <canvas id="one"></canvas>
+        <canvas id="two"></canvas>
+        <canvas id="three"></canvas>
+        <canvas id="four"></canvas>
+        <canvas id="five"></canvas>
+        <section class="modal">
+            <div class="content clearfix">
+                <p>GREETING COMPLETE</p><a class="right closeModal">X</a>
+                <canvas id="card" width="410" height="420"></canvas>
+                <div class="share">
+                    <p>Share with human networks.</p>
+
+                    <a downloand id="download">Download Card!!!</a>
+
+                    <div class=-"external clearfix">
+                        <!-- facebook -->
+                        <div id="fb-root"></div>
+                        <script>(function(d, s, id) {
+                          var js, fjs = d.getElementsByTagName(s)[0];
+                          if (d.getElementById(id)) return;
+                          js = d.createElement(s); js.id = id;
+                          js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+                          fjs.parentNode.insertBefore(js, fjs);
+                        }(document, 'script', 'facebook-jssdk'));</script>
+                        <div class="fb-share-button" data-href="https://developers.facebook.com/docs/plugins/" data-layout="button_count"></div>
+
+                        <!-- twitter -->
+                        <a class="twitter-share-button" href="https://twitter.com/share">Tweet</a>
+                        <script type="text/javascript">
+                        window.twttr=(function(d,s,id){var t,js,fjs=d.getElementsByTagName(s)[0];if(d.getElementById(id)){return}js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);return window.twttr||(t={_e:[],ready:function(f){t._e.push(f)}})}(document,"script","twitter-wjs"));
+                        </script>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+        <section class="credits">
+            <p>Hand-crafted, artisan webistry by Gene Chan. Concept by Anthony DiMichele &amp; Brian Cheung. Fist bump to Guilherme Pena Costa </p>
+        </section>
+    </body>
+        <!-- BEGIN scripts.inc -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- build:js:debug ui/js/app.js --><!-- /build -->
+        <!-- build:js:release ui/js/app_min.js --><!-- /build -->
+
+        <!-- build:remove:debug,release -->
+            <!-- local non-concatenated specialized scripts go here -->
+        <!-- /build -->
+
+        <!-- END scripts.inc -->
+    </body>
+</html>
