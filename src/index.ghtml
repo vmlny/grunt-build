@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- build:remove:debug,default -->
+          <title>Minified Release ("release" build)</title>
+        <!-- /build -->
+        <!-- build:remove:default,release -->
+          <title>Non-Minified Release ("debug" build)</title>
+        <!-- /build -->
+        <!-- build:remove:debug,release -->
+          <title>Source ("default" build)</title>
+        <!-- /build -->
+        <!-- build:include inc/head.inc --><!-- /build -->
+    </head>
+    <body>
+        <!-- build:include inc/scripts.inc --><!-- /build -->
+    </body>
+</html>

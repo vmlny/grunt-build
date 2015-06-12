@@ -1,70 +1,144 @@
 module.exports = function(grunt) {
-  "use strict";
+  'use strict';
+  var watchfiles = [
+        // include
+        'src/ui/css/*.css',
+        'src/ui/css/**/*.css',
+        'src/ui/js/*.js',
+        'src/ui/js/**/*.js',
+        'src/ui/img/sprites/*.png',
+        'src/inc/*.inc',
+        'src/inc/**/*.inc',
+        'src/*.ghtml',
+        'src/**/*.ghtml',
+        // ignore
+        '!src/ui/css/sprites.css',
+        '!src/*.html',
+        '!src/**/*.html',
+      ],
+      ghtmlToHTML = function(dest, src) {
+        if( /\.ghtml$/.test(src) ){
+            return dest + src.replace(/\.ghtml$/, '.html');
+        }
+      };
   grunt.initConfig({
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  ..|'''.| '||                           
-.|'     '   ||    ....   ....   .. ...   
-||          ||  .|...|| '' .||   ||  ||  
-'|.      .  ||  ||      .|' ||   ||  ||  
- ''|....'  .||.  '|...' '|..'|' .||. ||.                                     
-                                         
+  ..|'''.| '||
+.|'     '   ||    ....   ....   .. ...
+||          ||  .|...|| '' .||   ||  ||
+'|.      .  ||  ||      .|' ||   ||  ||
+ ''|....'  .||.  '|...' '|..'|' .||. ||.
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Wipe out previous builds.
-    clean: {
-      default:{
-        src:[
-              "../htdocs/*.html",
-              "../htdocs/**/*.html",
-              "../htdocs/ui"
+     clean: {
+       default: {
+        files: [
+          {
+            expand: true,
+            cwd: "bin/",
+            src:[
+                  "**/*.*",
+                  "!**/.svn" // leaves svn directories pre-SVN 1.7
+                ]
+          }
         ],
         options:{
-          force: true
+          'dot': true,
+          'nonull': true
+          // 'no-write': true
+          //force: true
         }
       },
       imagemin:{
-        src:'files/ui/imagemin/**'
+        src:'src/ui/imagemin/**'
+      },
+      htdocs:{
+        src:'../htdocs',
+        options:{
+          'dot': true,
+          'nonull': true,
+          'no-write': true,
+          'force': true
+        }
       }
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  ..|'''.|                           
-.|'     '    ...   ... ...  .... ... 
-||         .|  '|.  ||'  ||  '|.  |  
-'|.      . ||   ||  ||    |   '|.|   
- ''|....'   '|..|'  ||...'     '|    
-                    ||      .. |     
-                   ''''      ''      
+  ..|'''.|
+.|'     '    ...   ... ...  .... ...
+||         .|  '|.  ||'  ||  '|.  |
+'|.      . ||   ||  ||    |   '|.|
+ ''|....'   '|..|'  ||...'     '|
+                    ||      .. |
+                   ''''      ''
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Move assets during builds.
     copy: {
+      // default copy copies unadulterated assets to bin then copies minified images
+      // This keeps source mostly clear of processed files
       default: {
         files: [
           {
             expand: true,
-            cwd: "files/",
+            cwd: 'src/',
             src: [
-                  "**",
-                  // images are transferred in imagemin process
-                  "!ui/img/**",
-                  "!ui/imagemin/**",
-                  // includes should be transcribed and are not needed in releases
-                  "!inc",
-                  "!*.inc",
-                  "!**/*.inc",
-                  // processHTML should transcribe all HTML files
-                  "!*.html",
-                  "!**/*.html"
+                  '**',
+                  // js and css/scss are written to bin by concat/processors
+                  '!ui/css',
+                  '!ui/css/*',
+                  // '!ui/scss',
+                  // '!ui/scss/*',
+                  '!ui/js',
+                  '!ui/js/*',
+                  // images are copied to bin/ui/img below
+                  '!ui/img/**',
+                  '!ui/imagemin/**',
+                  // includes & ghtml should be processed and are not needed in releases
+                  '!inc',
+                  '!*.inc',
+                  '!**/*.inc',
+                  '!*.ghtml',
+                  '!**/*.ghtml',
+                  // processHTML/HTMLminification should write HTML files to bin
+                  '!*.html',
+                  '!**/*.html'
             ],
-            dest: "../htdocs/"
+            dest: 'bin/'
           },
           {
             expand: true,
-            cwd: "files/ui/imagemin/",
+            cwd: 'src/ui/imagemin/',
             src: [
-                  "**"
+                  '**'
             ],
-            dest: "../htdocs/ui/img/"
+            dest: 'bin/ui/img/'
+          }
+        ]
+      },
+      to_htdocs: {
+        files: [
+          {
+            expand: true,
+            cwd: 'bin/',
+            src: [
+                  '**'
+            ],
+            dest: '../htdocs/'
+          }
+        ]
+      },
+      no_HTML_min: {
+        files: [
+          {
+            expand: true,
+            cwd: 'src/',
+            src: [
+                  '**.html',
+                  '**/*.html'
+            ],
+            dest: 'bin/'
           }
         ]
       }
@@ -72,26 +146,26 @@ module.exports = function(grunt) {
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||'  '||' |''||''| '||    ||' '||'                                       
- ||    ||     ||     |||  |||   ||                                        
- ||''''||     ||     |'|..'||   ||                                        
- ||    ||     ||     | '|' ||   ||                                        
-.||.  .||.   .||.   .|. | .||. .||.....|                                  
-                                                                          
-                                                                          
-'||'  '|'         '||   ||       '||            .    ||                   
- '|.  .'   ....    ||  ...     .. ||   ....   .||.  ...    ...   .. ...   
-  ||  |   '' .||   ||   ||   .'  '||  '' .||   ||    ||  .|  '|.  ||  ||  
-   |||    .|' ||   ||   ||   |.   ||  .|' ||   ||    ||  ||   ||  ||  ||  
-    |     '|..'|' .||. .||.  '|..'||. '|..'|'  '|.' .||.  '|..|' .||. ||. 
+'||'  '||' |''||''| '||    ||' '||'
+ ||    ||     ||     |||  |||   ||
+ ||''''||     ||     |'|..'||   ||
+ ||    ||     ||     | '|' ||   ||
+.||.  .||.   .||.   .|. | .||. .||.....|
+
+
+'||'  '|'         '||   ||       '||            .    ||
+ '|.  .'   ....    ||  ...     .. ||   ....   .||.  ...    ...   .. ...
+  ||  |   '' .||   ||   ||   .'  '||  '' .||   ||    ||  .|  '|.  ||  ||
+   |||    .|' ||   ||   ||   |.   ||  .|' ||   ||    ||  ||   ||  ||  ||
+    |     '|..'|' .||. .||.  '|..'||. '|..'|'  '|.' .||.  '|..|' .||. ||.
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     validation:{
       files:[
-              'files/*.html',
-              'files/**/*.html',
-              '!files/*.inc.html',
-              '!files/**/*.inc.html',
+              'src/*.html',
+              'src/**/*.html',
+              '!src/*.ghtml',
+              '!src/**/*.ghtml',
         ],
         options:{
           reset:true,
@@ -101,11 +175,11 @@ module.exports = function(grunt) {
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  ..|'''.|  .|'''.|   .|'''.|     '||'       ||             .   
-.|'     '   ||..  '   ||..  '      ||       ...  .. ...   .||.  
-||           ''|||.    ''|||.      ||        ||   ||  ||   ||   
-'|.      . .     '|| .     '||     ||        ||   ||  ||   ||   
- ''|....'  |'....|'  |'....|'     .||.....| .||. .||. ||.  '|.' 
+  ..|'''.|  .|'''.|   .|'''.|     '||'       ||             .
+.|'     '   ||..  '   ||..  '      ||       ...  .. ...   .||.
+||           ''|||.    ''|||.      ||        ||   ||  ||   ||
+'|.      . .     '|| .     '||     ||        ||   ||  ||   ||
+ ''|....'  |'....|'  |'....|'     .||.....| .||. .||. ||.  '|.'
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     csslint: {
@@ -113,22 +187,54 @@ module.exports = function(grunt) {
         options: {
           import: 2,
           // lax csslint for spritesheet
-          'duplicate-background-images':false,
-          'zero-units':false
+          'important': false,
+          'adjoining-classes': false,
+          'known-properties': false,
+          'box-sizing': false,
+          'box-model': false,
+          'overqualified-elements': false,
+          'display-property-grouping': false,
+          'bulletproof-font-face': false,
+          'compatible-vendor-prefixes': false,
+          'regex-selectors': false,
+          'errors': true,
+          'duplicate-background-images': false,
+          'duplicate-properties': false,
+          'empty-rules': false,
+          'selector-max-approaching': false,
+          'gradients': false,
+          'fallback-colors': false,
+          'font-sizes': false,
+          'font-faces': false,
+          'floats': false,
+          'star-property-hack': false,
+          'outline-none': false,
+          'ids': false,
+          'underscore-property-hack': false,
+          'rules-count': false,
+          'qualified-headings': false,
+          'selector-max': false,
+          'shorthand': false,
+          'text-indent': false,
+          'unique-headings': false,
+          'universal-selector': false,
+          'unqualified-attributes': false,
+          'vendor-prefix': false,
+          'zero-units': false
         },
-        src: ['files/**/*.css']
+        src: ['src/**/*.css']
       }
   },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-   ||        '||'  '||'  ||             .   
-  ...  ....   ||    ||  ...  .. ...   .||.  
-   || ||. '   ||''''||   ||   ||  ||   ||   
-   || . '|..  ||    ||   ||   ||  ||   ||   
-   || |'..|' .||.  .||. .||. .||. ||.  '|.' 
-.. |'                                       
+   ||        '||'  '||'  ||             .
+  ...  ....   ||    ||  ...  .. ...   .||.
+   || ||. '   ||''''||   ||   ||  ||   ||
+   || . '|..  ||    ||   ||   ||  ||   ||
+   || |'..|' .||.  .||. .||. .||. ||.  '|.'
+.. |'
  ''
- 
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     jshint: {
       default: {
@@ -154,46 +260,45 @@ module.exports = function(grunt) {
           browser:true,
           nonstandard:true
         },
-        src: ['files/**/*.js', '!files/ui/v/*.js']
+        src: [
+                'src/**/*.js',
+                '!src/ui/v/*.js'
+             ]
       }
   },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||''|.                                                
- ||   || ... ..    ...     ....    ....   ....   ....  
- ||...|'  ||' '' .|  '|. .|   '' .|...|| ||. '  ||. '  
- ||       ||     ||   || ||      ||      . '|.. . '|.. 
-.||.     .||.     '|..|'  '|...'  '|...' |'..|' |'..|' 
-                                                       
-                                                       
-'||'  '||' |''||''| '||    ||' '||'                    
- ||    ||     ||     |||  |||   ||                     
- ||''''||     ||     |'|..'||   ||                     
- ||    ||     ||     | '|' ||   ||                     
-.||.  .||.   .||.   .|. | .||. .||.....|               
+'||''|.
+ ||   || ... ..    ...     ....    ....   ....   ....
+ ||...|'  ||' '' .|  '|. .|   '' .|...|| ||. '  ||. '
+ ||       ||     ||   || ||      ||      . '|.. . '|..
+.||.     .||.     '|..|'  '|...'  '|...' |'..|' |'..|'
+
+
+'||'  '||' |''||''| '||    ||' '||'
+ ||    ||     ||     |||  |||   ||
+ ||''''||     ||     |'|..'||   ||
+ ||    ||     ||     | '|' ||   ||
+.||.  .||.   .||.   .|. | .||. .||.....|
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Create build-specific HTML
     processhtml: {
-      include: {
+      default: {
         files: [
           {
             expand:true,
-            cwd:'files/',
+            cwd:'src/',
             src:[
-                  '*.inc.html',
-                  '**/*.inc.html'
+                  '*.ghtml',
+                  '**/*.ghtml'
                 ],
-            dest:'files/',
-            rename: function(dest, src) {
-              if( /\.inc\.html$/.test(src) ){
-                  return dest + src.replace(/\.inc\.html$/, '.html');
-              }
-            }
+            dest:'src/',
+            rename: ghtmlToHTML // POJS function -- see var block above
           }
         ],
         options:{
-          includeBase:'files/',
+          includeBase:'src/',
           recursive:true
         }
       },
@@ -201,17 +306,18 @@ module.exports = function(grunt) {
         files: [
           {
             expand:true,
-            cwd:'files/',
+            cwd:'src/',
             src:[
-                  '*.html',
-                  '**/*.html',
-                  '!*.inc.html',
-                  '!**/*.inc.html'
+                  '*.ghtml',
+                  '**/*.ghtml'
                 ],
-            dest:'../htdocs/'
+            dest:'bin/',
+            rename: ghtmlToHTML // POJS function -- see var block above
           }
         ],
         options:{
+          includeBase:'src/',
+          recursive:true,
           strip:true
         }
       },
@@ -219,48 +325,52 @@ module.exports = function(grunt) {
         files: [
           {
             expand:true,
-            cwd:'files/',
+            cwd:'src/',
             src:[
-                  '*.html',
-                  '**/*.html',
-                  '!*.inc.html',
-                  '!**/*.inc.html'
+                  '*.ghtml',
+                  '**/*.ghtml'
                 ],
-            dest:'../htdocs/'
+            dest:'bin/',
+            rename: ghtmlToHTML // POJS function -- see var block above
           }
         ],
         options:{
+          includeBase:'src/',
+          recursive:true,
           strip:true
         }
       },
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
- .|'''.|                    ||    .           
- ||..  '  ... ...  ... ..  ...  .||.    ....  
-  ''|||.   ||'  ||  ||' ''  ||   ||   .|...|| 
-.     '||  ||    |  ||      ||   ||   ||      
-|'....|'   ||...'  .||.    .||.  '|.'  '|...' 
-           ||                                 
-          ''''                                
+ .|'''.|                    ||    .
+ ||..  '  ... ...  ... ..  ...  .||.    ....
+  ''|||.   ||'  ||  ||' ''  ||   ||   .|...||
+.     '||  ||    |  ||      ||   ||   ||
+|'....|'   ||...'  .||.    .||.  '|.'  '|...'
+           ||
+          ''''
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // create spritesheet and CSS
     sprite: {
       default: {
         // location of individual images
-        src: 'files/ui/img/sprites/*.png',
+        src: 'src/ui/img/sprites/*.png',
 
         // location of compiled sprite sheet
-        destImg: 'files/ui/img/spritesheet.png',
-        
+        destImg: 'src/ui/img/spritesheet.png',
+
         // location on sprite CSS
-        destCSS: 'files/ui/css/sprites.css',
+        destCSS: 'src/ui/css/sprites.css',
 
         // image arrangement algorithm
         algorithm: 'diagonal',
 
         // PNG processing engine (this one does not require additional installation)
         engine: 'pngsmith',
+
+        //custom path for the css file to point to the image
+        // imgPath:'../img/spritesheet.png',
 
         cssOpts: {
           // used for CSS class naming
@@ -275,14 +385,14 @@ module.exports = function(grunt) {
     },
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||'                                    '||    ||'  ||           
- ||  .. .. ..    ....     ... .   ....   |||  |||  ...  .. ...   
- ||   || || ||  '' .||   || ||  .|...||  |'|..'||   ||   ||  ||  
- ||   || || ||  .|' ||    |''   ||       | '|' ||   ||   ||  ||  
-.||. .|| || ||. '|..'|'  '||||.  '|...' .|. | .||. .||. .||. ||. 
-                        .|....'                                  
-                                                                 
-ham-fisted image optimization 
+'||'                                    '||    ||'  ||
+ ||  .. .. ..    ....     ... .   ....   |||  |||  ...  .. ...
+ ||   || || ||  '' .||   || ||  .|...||  |'|..'||   ||   ||  ||
+ ||   || || ||  .|' ||    |''   ||       | '|' ||   ||   ||  ||
+.||. .|| || ||. '|..'|'  '||||.  '|...' .|. | .||. .||. .||. ||.
+                        .|....'
+
+ham-fisted image optimization
 manual optimization is preferable for non-png sources as compression effects
 images based factors like edge contrast and color depth specific to each image
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -290,16 +400,16 @@ images based factors like edge contrast and color depth specific to each image
   imagemin:{
       default:{
         files:[{
-          cwd:'files/ui/img/',
+          cwd:'src/ui/img/',
           expand:true,
           src:[
-                "**",
-                "*",
-                "!sprites/*",
-                "!sprites/**"
+                '**',
+                '*',
+                '!sprites/*',
+                '!sprites/**'
           ],
           filter:'isFile',
-          dest:'files/ui/imagemin/'
+          dest:'src/ui/imagemin/'
         }],
         options:{
           optimizationlevel:3,
@@ -312,59 +422,85 @@ images based factors like edge contrast and color depth specific to each image
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  ..|'''.|                                    .   
-.|'     '    ...   .. ...     ....   ....   .||.  
-||         .|  '|.  ||  ||  .|   '' '' .||   ||   
-'|.      . ||   ||  ||  ||  ||      .|' ||   ||   
- ''|....'   '|..|' .||. ||.  '|...' '|..'|'  '|.' 
-                                                  
+  ..|'''.|                                    .
+.|'     '    ...   .. ...     ....   ....   .||.
+||         .|  '|.  ||  ||  .|   '' '' .||   ||
+'|.      . ||   ||  ||  ||  ||      .|' ||   ||
+ ''|....'   '|..|' .||. ||.  '|...' '|..'|'  '|.'
+
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // concatenate js and css files here to allow for greater control of order
     concat: {
       // JS files
-      "../htdocs/ui/js/app.js": [
-                                "files/ui/js/v/*.js",
-                                "files/ui/js/plugins/*.js",
-                                "files/ui/js/*.js"
+      'bin/ui/js/app.js': [
+                                'src/ui/js/v/*.js',
+                                // if using require.js,
+                                // feel free to comment the below line
+                                'src/ui/js/plugins/*.js',
+                                'src/ui/js/*.js'
                               ],
       // css
-      "../htdocs/ui/css/all.css": [
-                                "files/ui/css/*.css"
+      'bin/ui/css/all.css': [
+                                'src/ui/css/reset.css',
+                                'src/ui/css/sprites.css',
+                                'src/ui/css/clearfix.css',
+                                'src/ui/css/*.css',
+                                'src/ui/css/**/*.css'
                               ]
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||    ||'  ||            ||    .'|.  ||                    .    ||                   
- |||  |||  ...  .. ...   ...  .||.   ...    ....   ....   .||.  ...    ...   .. ...   
- |'|..'||   ||   ||  ||   ||   ||     ||  .|   '' '' .||   ||    ||  .|  '|.  ||  ||  
- | '|' ||   ||   ||  ||   ||   ||     ||  ||      .|' ||   ||    ||  ||   ||  ||  ||  
-.|. | .||. .||. .||. ||. .||. .||.   .||.  '|...' '|..'|'  '|.' .||.  '|..|' .||. ||. 
-                                                                                      
+'||    ||'  ||            ||    .'|.  ||                    .    ||
+ |||  |||  ...  .. ...   ...  .||.   ...    ....   ....   .||.  ...    ...   .. ...
+ |'|..'||   ||   ||  ||   ||   ||     ||  .|   '' '' .||   ||    ||  .|  '|.  ||  ||
+ | '|' ||   ||   ||  ||   ||   ||     ||  ||      .|' ||   ||    ||  ||   ||  ||  ||
+.|. | .||. .||. .||. ||. .||. .||.   .||.  '|...' '|..'|'  '|.' .||.  '|..|' .||. ||.
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-    // Minfiy the distribution CSS.
+    // Minfiy the release CSS. +++++++++++++++++++++
     cssmin: {
       release: {
-        files: {
-          "../htdocs/ui/css/all_min.css": ["../htdocs/ui/css/all.css"]
-        }
+        files:[{
+          expand: true,
+            cwd: 'bin/ui/css',
+            src: ['*.css','**/*.css'],
+            dest: 'bin/ui/css',
+            ext: '_min.css'
+        }]
+      }
+    },
+    //Minfiy html for release ++++++++++++++++++++++
+    htmlmin:{
+      release:{
+        options:{
+          removeComments: true,
+          collapseWhitespace: true,
+          minifyCSS:true
+        },
+        files:[{
+          expand: true,
+            cwd: 'bin',
+            src: ['*.html','**/*.html'],
+            dest: 'bin'
+        }]
       }
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||'  '|'         '||   ||    .'|.  ||                    .    ||                   
- ||    |    ... .  ||  ...  .||.   ...    ....   ....   .||.  ...    ...   .. ...   
- ||    |   || ||   ||   ||   ||     ||  .|   '' '' .||   ||    ||  .|  '|.  ||  ||  
- ||    |    |''    ||   ||   ||     ||  ||      .|' ||   ||    ||  ||   ||  ||  ||  
-  '|..'    '||||. .||. .||. .||.   .||.  '|...' '|..'|'  '|.' .||.  '|..|' .||. ||. 
-          .|....'                                                                   
+'||'  '|'         '||   ||    .'|.  ||                    .    ||
+ ||    |    ... .  ||  ...  .||.   ...    ....   ....   .||.  ...    ...   .. ...
+ ||    |   || ||   ||   ||   ||     ||  .|   '' '' .||   ||    ||  .|  '|.  ||  ||
+ ||    |    |''    ||   ||   ||     ||  ||      .|' ||   ||    ||  ||   ||  ||  ||
+  '|..'    '||||. .||. .||. .||.   .||.  '|...' '|..'|'  '|.' .||.  '|..|' .||. ||.
+          .|....'
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Uglify the distribution JS.
     uglify:{
       release: {
         files: {
-          '../htdocs/ui/js/app_min.js': ['../htdocs/ui/js/app.js']
+          'bin/ui/js/app_min.js': ['bin/ui/js/app.js']
         },
         options:{
           sourceMap:true
@@ -373,152 +509,150 @@ images based factors like edge contrast and color depth specific to each image
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'|| '||'  '|'           .           '||      
- '|. '|.  .'   ....   .||.    ....   || ..   
-  ||  ||  |   '' .||   ||   .|   ''  ||' ||  
-   ||| |||    .|' ||   ||   ||       ||  ||  
-    |   |     '|..'|'  '|.'  '|...' .||. ||. 
+'|| '||'  '|'           .           '||
+ '|. '|.  .'   ....   .||.    ....   || ..
+  ||  ||  |   '' .||   ||   .|   ''  ||' ||
+   ||| |||    .|' ||   ||   ||       ||  ||
+    |   |     '|..'|'  '|.'  '|...' .||. ||.
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     watch:{
+      // default for dev watches
       default:{
-        files:[
-                'files/ui/css/*.css',
-                '!files/ui/css/sprites.css',
-                'files/ui/js/*.js',
-                'files/ui/js/**/*.js',
-                'files/inc/**.inc',
-                'files/inc/**/*.inc',
-                'files/**.html',
-                '!files/index.html',
-                'files/ui/img/sprites/*.png'
-              ],
-        tasks:'default'
+        files: watchfiles, // POJS array used to DRY -- see var block above
+        tasks:['default']
       },
+      // debug for non-obfuscated watches
       debug:{
-        files:[
-                'files/ui/css/*.css',
-                '!files/ui/css/sprites.css',
-                'files/ui/js/*.js',
-                'files/ui/js/**/*.js',
-                'files/inc/**.inc',
-                'files/inc/**/*.inc',
-                'files/**.html',
-                '!files/index.html',
-                'files/ui/img/sprites/*.png'
-              ],
-        tasks:'debug'
+        files:watchfiles, // POJS array used to DRY -- see var block above
+        tasks:['debug', 'default']
+      },
+      release:{
+        files:watchfiles, // POJS array used to DRY -- see var block above
+        tasks:['release', 'default']
       }
-    },
+},
+
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||'  '||' |''||''| |''||''| '||''|.               
- ||    ||     ||       ||     ||   ||              
- ||''''||     ||       ||     ||...|'              
- ||    ||     ||       ||     ||                   
-.||.  .||.   .||.     .||.   .||.                  
-                                                                                                  
- .|'''.|                                           
- ||..  '    ....  ... ..  .... ...   ....  ... ..  
-  ''|||.  .|...||  ||' ''  '|.  |  .|...||  ||' '' 
-.     '|| ||       ||       '|.|   ||       ||     
-|'....|'   '|...' .||.       '|     '|...' .||.                                                     
-                                                   
+  ..|'''.|                                             .
+.|'     '    ...   .. ...   .. ...     ....    ....  .||.
+||         .|  '|.  ||  ||   ||  ||  .|...|| .|   ''  ||
+'|.      . ||   ||  ||  ||   ||  ||  ||      ||       ||
+ ''|....'   '|..|' .||. ||. .||. ||.  '|...'  '|...'  '|.'
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-  'http-server': {
-    default: {
-
-            // the server root directory
-            root: 'files/',
-
-            port: 3000,
-            // port: function() { return 8282; }
-
-            host: "127.0.0.1",
-
-            cache: 0,
-            showDir : true,
-            autoIndex: true,
-            defaultExt: "html",
-
-            // run in parallel with other tasks
-            runInBackground: false
-
-        },
-    release: {
-
-            // the server root directory
-            root: '../htdocs/',
-
-            port: 3000,
-            // port: function() { return 8282; }
-
-            host: "127.0.0.1",
-
-            cache: 0,
-            showDir : true,
-            autoIndex: true,
-            defaultExt: "html",
-
-            // run in parallel with other tasks
-            runInBackground: false
-
-        } 
+connect: {
+  default: {
+    options: {
+      port: 3000,
+      base: 'src',
+      hostname: '*'
     }
+  },
+  debug: {
+    options: {
+      port: 3030,
+      base: 'bin',
+      hostname: '*'
+    }
+  },
+  release: {
+    options: {
+      port: 3030,
+      base: 'bin',
+      hostname: '*'
+    }
+  }
+}
 });
+
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-|''||''|                '||             
-   ||     ....    ....   ||  ..   ....  
-   ||    '' .||  ||. '   || .'   ||. '  
-   ||    .|' ||  . '|..  ||'|.   . '|.. 
-  .||.   '|..'|' |'..|' .||. ||. |'..|' 
+|''||''|                '||
+   ||     ....    ....   ||  ..   ....
+   ||    '' .||  ||. '   || .'   ||. '
+   ||    .|' ||  . '|..  ||'|.   . '|..
+  .||.   '|..'|' |'..|' .||. ||. |'..|'
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
   // Grunt contribution tasks.
-  grunt.loadNpmTasks("grunt-contrib-clean");
-  grunt.loadNpmTasks("grunt-contrib-copy");
-  grunt.loadNpmTasks("grunt-contrib-concat");
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-csslint');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks("grunt-contrib-uglify");
-  grunt.loadNpmTasks("grunt-contrib-cssmin");
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-htmlmin');
 
   // Third-party tasks.
-  grunt.loadNpmTasks("grunt-processhtml");
+  grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-spritesmith');
   grunt.loadNpmTasks('grunt-html-validation');
-  grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-contrib-connect');
 
 
-  grunt.registerTask("default", [
-                                  "processhtml:include",
-                                  "validation",
-                                  "csslint",
-                                  "jshint",
-                                  "sprite"
+  grunt.registerTask('default', [
+                                  'processhtml:default',
+                                  'validation',
+                                  // css preprocessors go here
+                                  'csslint',
+                                  // coffeescript, DART, ES6 preprocessors go here
+                                  'jshint',
+                                  'sprite'
                                 ]);
-  grunt.registerTask("debug", [
-                                  "clean",
-                                  "sprite",
-                                  "imagemin",
-                                  "copy",
-                                  "clean:imagemin",
-                                  "concat",
-                                  "processhtml:include",
-                                  "processhtml:debug"
+  grunt.registerTask('debug', [
+                                  'clean',
+                                  'sprite',
+                                  'imagemin',
+                                  'copy',
+                                  'clean:imagemin',
+                                  // css preprocessors go here
+                                  'concat',
+                                  'processhtml:debug'
                                 ]);
-  grunt.registerTask("release", [
-                                  "clean",
-                                  "sprite",
-                                  "imagemin",
-                                  "copy",
-                                  "clean:imagemin",
-                                  "concat",
-                                  "cssmin",
-                                  "uglify",
-                                  "processhtml:include",
-                                  "processhtml:release"
+  grunt.registerTask('release', [
+                                  'clean',
+                                  'sprite',
+                                  'imagemin',
+                                  'copy',
+                                  'clean:imagemin',
+                                  // css preprocessors go here
+                                  'concat',
+                                  'cssmin',
+                                  'uglify',
+                                  'processhtml:release',
+                                  // toggle comments to add/remove HTML minification (for Wes)
+                                  'htmlmin:release',
+                                  //'copy:no_HTML_min',
+                                  // uncomment below to build to htdocs in SVN filescheme
+                                  // 'clean:htdocs',
+                                  // 'copy:to_htdocs'
                                 ]);
+  grunt.registerTask('server', '', function(_subTask){
+    switch(_subTask){
+      case 'debug':
+        grunt.task.run([
+                          'connect:default',
+                          'connect:debug',
+                          'watch:debug'
+                       ]);
+      break;
+      case 'release':
+        grunt.task.run([
+        'connect:default',
+                          'connect:release',
+                          'watch:release',
+                       ]);
+      break;
+      default:
+        grunt.task.run([
+                          'connect:default',
+                          'watch:default'
+                       ]);
+      break;
+    }
+  });
 };
