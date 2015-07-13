@@ -55,11 +55,20 @@ module.exports = function(grunt) {
         src:'src/ui/imagemin/**'
       },
       htdocs:{
-        src:'../htdocs',
+        files: [
+          {
+            expand: true,
+            cwd: '../htdocs/',
+            src:[
+                  '*',
+                  "!**/.svn" // leaves svn directories pre-SVN 1.7
+                ]
+          }
+        ],
         options:{
           'dot': true,
           'nonull': true,
-          'no-write': true,
+          //'no-write': true,
           'force': true
         }
       }
@@ -88,6 +97,7 @@ module.exports = function(grunt) {
                   // js and css/scss are written to bin by concat/processors
                   '!ui/css',
                   '!ui/css/*',
+          '!ui/css/**',
                   // '!ui/scss',
                   // '!ui/scss/*',
                   '!ui/js',
@@ -97,6 +107,7 @@ module.exports = function(grunt) {
                   '!ui/imagemin/**',
                   // includes & ghtml should be processed and are not needed in releases
                   '!inc',
+                  '!inc/*',
                   '!*.inc',
                   '!**/*.inc',
                   '!*.ghtml',
@@ -146,21 +157,14 @@ module.exports = function(grunt) {
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||'  '||' |''||''| '||    ||' '||'
- ||    ||     ||     |||  |||   ||
- ||''''||     ||     |'|..'||   ||
- ||    ||     ||     | '|' ||   ||
-.||.  .||.   .||.   .|. | .||. .||.....|
-
-
-'||'  '|'         '||   ||       '||            .    ||
- '|.  .'   ....    ||  ...     .. ||   ....   .||.  ...    ...   .. ...
-  ||  |   '' .||   ||   ||   .'  '||  '' .||   ||    ||  .|  '|.  ||  ||
-   |||    .|' ||   ||   ||   |.   ||  .|' ||   ||    ||  ||   ||  ||  ||
-    |     '|..'|' .||. .||.  '|..'||. '|..'|'  '|.' .||.  '|..|' .||. ||.
+'||'  '||' |''||''| '||    ||' '||'      '||   ||             .
+ ||    ||     ||     |||  |||   ||        ||  ...  .. ...   .||.
+ ||''''||     ||     |'|..'||   ||        ||   ||   ||  ||   ||
+ ||    ||     ||     | '|' ||   ||        ||   ||   ||  ||   ||
+.||.  .||.   .||.   .|. | .||. .||.....| .||. .||. .||. ||.  '|.'
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-    validation:{
+    htmllint:{
       files:[
               'src/*.html',
               'src/**/*.html',
@@ -168,9 +172,7 @@ module.exports = function(grunt) {
               '!src/**/*.ghtml',
         ],
         options:{
-          reset:true,
-          relaxerror:[],
-          reportpath:false
+          force: true // don't break build for SEO enfoced standards breakage
         }
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -262,7 +264,7 @@ module.exports = function(grunt) {
         },
         src: [
                 'src/**/*.js',
-                '!src/ui/v/*.js'
+                '!src/ui/js/v/*.js'
              ]
       }
   },
@@ -443,8 +445,8 @@ images based factors like edge contrast and color depth specific to each image
       // css
       'bin/ui/css/all.css': [
                                 'src/ui/css/reset.css',
+                                'src/ui/css/fonts.css',
                                 'src/ui/css/sprites.css',
-                                'src/ui/css/clearfix.css',
                                 'src/ui/css/*.css',
                                 'src/ui/css/**/*.css'
                               ]
@@ -590,21 +592,21 @@ connect: {
   // Third-party tasks.
   grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-spritesmith');
-  grunt.loadNpmTasks('grunt-html-validation');
+  grunt.loadNpmTasks('grunt-html');
   grunt.loadNpmTasks('grunt-contrib-connect');
 
 
   grunt.registerTask('default', [
                                   'processhtml:default',
-                                  'validation',
+                                  'sprite',
+                                  'htmllint',
                                   // css preprocessors go here
                                   'csslint',
                                   // coffeescript, DART, ES6 preprocessors go here
-                                  'jshint',
-                                  'sprite'
+                                  'jshint'
                                 ]);
   grunt.registerTask('debug', [
-                                  'clean',
+                                  'clean:default',
                                   'sprite',
                                   'imagemin',
                                   'copy',
@@ -614,7 +616,7 @@ connect: {
                                   'processhtml:debug'
                                 ]);
   grunt.registerTask('release', [
-                                  'clean',
+                                  'clean:default',
                                   'sprite',
                                   'imagemin',
                                   'copy',
@@ -626,10 +628,9 @@ connect: {
                                   'processhtml:release',
                                   // toggle comments to add/remove HTML minification (for Wes)
                                   'htmlmin:release',
-                                  //'copy:no_HTML_min',
                                   // uncomment below to build to htdocs in SVN filescheme
                                   // 'clean:htdocs',
-                                  // 'copy:to_htdocs'
+                                  //'copy:to_htdocs'
                                 ]);
   grunt.registerTask('server', '', function(_subTask){
     switch(_subTask){
