@@ -55,6 +55,8 @@ Due to the disclusion of the htdocs folder the build process is conflated and co
 
 When using this code, create a `trunk/frontend` directory in your SVN checkout and put the contents of this project clone there. The process will then build the deployment code to the `trunk/frontend/bin` folder and will then copy to the `trunk/htdocs` folder through the use of the code above.
 
+The paths described below are constructed from the `base` and `paths` variables defined at the top of the gruntfile. Changes to the paths or base folder names can be made globally within these variables.
+
     .
     ├─ frontend (grunt-build root folder)
     │    ├─ src
