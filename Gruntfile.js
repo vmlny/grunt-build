@@ -1,20 +1,34 @@
 module.exports = function(grunt) {
   'use strict';
-  var watchfiles = [
+  var base = {
+        'src'     : 'src/',
+        'bin'     : 'bin/',
+        'htdocs'  : '../htdocs/',
+      },
+      paths = {
+        'ui'      : 'ui/',
+        'js'      : 'ui/js/',
+        'css'     : 'ui/css/',
+        'scss'    : 'ui/scss',
+        'fonts'   : 'ui/fonts/',
+        'img'     : 'ui/img/',
+        'inc'     : 'inc/',
+      },
+      watchfiles = [
         // include
-        'src/ui/css/*.css',
-        'src/ui/css/**/*.css',
-        'src/ui/js/*.js',
-        'src/ui/js/**/*.js',
-        'src/ui/img/sprites/*.png',
-        'src/inc/*.inc',
-        'src/inc/**/*.inc',
-        'src/*.ghtml',
-        'src/**/*.ghtml',
+        base.src + paths.css + '*.css',
+        base.src + paths.css + '**/*.css',
+        base.src + paths.js + '*.js',
+        base.src + paths.js + '**/*.js',
+        base.src + paths.img + 'sprites/*.png',
+        base.src + paths.inc + '*.inc',
+        base.src + paths.inc + '**/*.inc',
+        base.src + '*.ghtml',
+        base.src + '**/*.ghtml',
         // ignore
-        '!src/ui/css/sprites.css',
-        '!src/*.html',
-        '!src/**/*.html',
+        '!' + base.src + paths.css + 'sprites.css',
+        '!' + base.src + '*.html',
+        '!' + base.src + '**/*.html',
       ],
       ghtmlToHTML = function(dest, src) {
         if( /\.ghtml$/.test(src) ){
@@ -22,6 +36,10 @@ module.exports = function(grunt) {
         }
       };
   grunt.initConfig({
+    // VARIABLES FOR CONFIG STRING REFERENCE
+    base : base,
+    paths : paths,
+
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   ..|'''.| '||
@@ -37,7 +55,7 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: "bin/",
+            cwd: base.bin,
             src:[
                   "**/*.*",
                   "!**/.svn" // leaves svn directories pre-SVN 1.7
@@ -52,13 +70,13 @@ module.exports = function(grunt) {
         }
       },
       imagemin:{
-        src:'src/ui/imagemin/**'
+        src:'<%= base.src %><%= paths.ui %>imagemin/**'
       },
       htdocs:{
         files: [
           {
             expand: true,
-            cwd: '../htdocs/',
+            cwd: base.htdocs,
             src:[
                   '*',
                   "!**/.svn" // leaves svn directories pre-SVN 1.7
@@ -91,23 +109,23 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: 'src/',
+            cwd: base.src,
             src: [
                   '**',
                   // js and css/scss are written to bin by concat/processors
-                  '!ui/css',
-                  '!ui/css/*',
-          '!ui/css/**',
+                  '!<%= paths.css %>',
+                  '!<%= paths.css %>*',
+                  '!<%= paths.css %>**',
                   // '!ui/scss',
                   // '!ui/scss/*',
-                  '!ui/js',
-                  '!ui/js/*',
+                  '!<%= paths.js %>',
+                  '!<%= paths.js %>*',
                   // images are copied to bin/ui/img below
-                  '!ui/img/**',
-                  '!ui/imagemin/**',
+                  '!<%= paths.img %>**',
+                  '!<%= paths.ui %>imagemin/**',
                   // includes & ghtml should be processed and are not needed in releases
-                  '!inc',
-                  '!inc/*',
+                  '!<%= paths.inc %>',
+                  '!<%= paths.inc %>/*',
                   '!*.inc',
                   '!**/*.inc',
                   '!*.ghtml',
@@ -116,15 +134,15 @@ module.exports = function(grunt) {
                   '!*.html',
                   '!**/*.html'
             ],
-            dest: 'bin/'
+            dest: base.bin
           },
           {
             expand: true,
-            cwd: 'src/ui/imagemin/',
+            cwd: '<%= base.src %><%= paths.ui %>imagemin/',
             src: [
                   '**'
             ],
-            dest: 'bin/ui/img/'
+            dest: '<%= base.bin %><%= paths.img %>'
           }
         ]
       },
@@ -132,11 +150,11 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: 'bin/',
+            cwd: base.bin,
             src: [
                   '**'
             ],
-            dest: '../htdocs/'
+            dest: base.htdocs
           }
         ]
       },
@@ -144,12 +162,12 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: 'src/',
+            cwd: base.src,
             src: [
                   '**.html',
                   '**/*.html'
             ],
-            dest: 'bin/'
+            dest: base.bin
           }
         ]
       }
@@ -166,10 +184,10 @@ module.exports = function(grunt) {
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     htmllint:{
       files:[
-              'src/*.html',
-              'src/**/*.html',
-              '!src/*.ghtml',
-              '!src/**/*.ghtml',
+              '<%= base.src %>*.html',
+              '<%= base.src %>**/*.html',
+              '!<%= base.src %>*.ghtml',
+              '!<%= base.src %>**/*.ghtml',
         ],
         options:{
           force: true // don't break build for SEO enfoced standards breakage
@@ -224,7 +242,7 @@ module.exports = function(grunt) {
           'vendor-prefix': false,
           'zero-units': false
         },
-        src: ['src/**/*.css']
+        src: ['<%= base.src %>/**/*.css']
       }
   },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -263,8 +281,8 @@ module.exports = function(grunt) {
           nonstandard:true
         },
         src: [
-                'src/**/*.js',
-                '!src/ui/js/v/*.js'
+                '<%= base.src %>/**/*.js',
+                '!<%= base.src %><%= paths.js %>v/*.js'
              ]
       }
   },
@@ -290,17 +308,17 @@ module.exports = function(grunt) {
         files: [
           {
             expand:true,
-            cwd:'src/',
+            cwd:base.src,
             src:[
                   '*.ghtml',
                   '**/*.ghtml'
                 ],
-            dest:'src/',
+            dest:base.src,
             rename: ghtmlToHTML // POJS function -- see var block above
           }
         ],
         options:{
-          includeBase:'src/',
+          includeBase:base.src,
           recursive:true
         }
       },
@@ -308,17 +326,17 @@ module.exports = function(grunt) {
         files: [
           {
             expand:true,
-            cwd:'src/',
+            cwd:base.src,
             src:[
                   '*.ghtml',
                   '**/*.ghtml'
                 ],
-            dest:'bin/',
+            dest:base.bin,
             rename: ghtmlToHTML // POJS function -- see var block above
           }
         ],
         options:{
-          includeBase:'src/',
+          includeBase:base.src,
           recursive:true,
           strip:true
         }
@@ -327,17 +345,17 @@ module.exports = function(grunt) {
         files: [
           {
             expand:true,
-            cwd:'src/',
+            cwd:base.src,
             src:[
                   '*.ghtml',
                   '**/*.ghtml'
                 ],
-            dest:'bin/',
+            dest:base.bin,
             rename: ghtmlToHTML // POJS function -- see var block above
           }
         ],
         options:{
-          includeBase:'src/',
+          includeBase:base.src,
           recursive:true,
           strip:true
         }
@@ -357,13 +375,13 @@ module.exports = function(grunt) {
     sprite: {
       default: {
         // location of individual images
-        src: 'src/ui/img/sprites/*.png',
+        src: '<%= base.src %><%= paths.img %>sprites/*.png',
 
         // location of compiled sprite sheet
-        destImg: 'src/ui/img/spritesheet.png',
+        destImg: '<%= base.src %><%= paths.img %>spritesheet.png',
 
         // location on sprite CSS
-        destCSS: 'src/ui/css/sprites.css',
+        destCSS: '<%= base.src %><%= paths.css %>sprites.css',
 
         // image arrangement algorithm
         algorithm: 'diagonal',
@@ -402,7 +420,7 @@ images based factors like edge contrast and color depth specific to each image
   imagemin:{
       default:{
         files:[{
-          cwd:'src/ui/img/',
+          cwd:'<%= base.src %><%= paths.img %>',
           expand:true,
           src:[
                 '**',
@@ -411,7 +429,7 @@ images based factors like edge contrast and color depth specific to each image
                 '!sprites/**'
           ],
           filter:'isFile',
-          dest:'src/ui/imagemin/'
+          dest:'<%= base.src %><%= paths.ui %>imagemin/'
         }],
         options:{
           optimizationlevel:3,
@@ -435,20 +453,20 @@ images based factors like edge contrast and color depth specific to each image
     // concatenate js and css files here to allow for greater control of order
     concat: {
       // JS files
-      'bin/ui/js/app.js': [
-                                'src/ui/js/v/*.js',
+      '<%= base.bin %><%= paths.js %>app.js': [
+                                '<%= base.src %><%= paths.js %>v/*.js',
                                 // if using require.js,
                                 // feel free to comment the below line
-                                'src/ui/js/plugins/*.js',
-                                'src/ui/js/*.js'
+                                '<%= base.src %><%= paths.js %>plugins/*.js',
+                                '<%= base.src %><%= paths.js %>/*.js'
                               ],
       // css
-      'bin/ui/css/all.css': [
-                                'src/ui/css/reset.css',
-                                'src/ui/css/fonts.css',
-                                'src/ui/css/sprites.css',
-                                'src/ui/css/*.css',
-                                'src/ui/css/**/*.css'
+      '<%= base.bin %><%= paths.css %>all.css': [
+                                '<%= base.src %><%= paths.css %>reset.css',
+                                '<%= base.src %><%= paths.css %>fonts.css',
+                                '<%= base.src %><%= paths.css %>sprites.css',
+                                '<%= base.src %><%= paths.css %>*.css',
+                                '<%= base.src %><%= paths.css %>**/*.css'
                               ]
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -465,9 +483,9 @@ images based factors like edge contrast and color depth specific to each image
       release: {
         files:[{
           expand: true,
-            cwd: 'bin/ui/css',
+            cwd: '<%= base.bin %><%= paths.css %>',
             src: ['*.css','**/*.css'],
-            dest: 'bin/ui/css',
+            dest: '<%= base.bin %><%= paths.css %>',
             ext: '_min.css'
         }]
       }
@@ -482,9 +500,9 @@ images based factors like edge contrast and color depth specific to each image
         },
         files:[{
           expand: true,
-            cwd: 'bin',
+            cwd: base.bin,
             src: ['*.html','**/*.html'],
-            dest: 'bin'
+            dest: base.bin
         }]
       }
     },
@@ -502,7 +520,7 @@ images based factors like edge contrast and color depth specific to each image
     uglify:{
       release: {
         files: {
-          'bin/ui/js/app_min.js': ['bin/ui/js/app.js']
+          '<%= base.bin %><%= paths.js %>app_min.js': ['<%= base.bin %><%= paths.js %>app.js']
         },
         options:{
           sourceMap:true
@@ -548,21 +566,21 @@ connect: {
   default: {
     options: {
       port: 3000,
-      base: 'src',
+      base: base.src,
       hostname: '*'
     }
   },
   debug: {
     options: {
       port: 3030,
-      base: 'bin',
+      base: base.bin,
       hostname: '*'
     }
   },
   release: {
     options: {
       port: 3030,
-      base: 'bin',
+      base: base.bin,
       hostname: '*'
     }
   }
