@@ -1,44 +1,8 @@
 module.exports = function(grunt) {
   'use strict';
-  var base = {
-        'src'     : 'src/',
-        'bin'     : 'bin/',
-        'htdocs'  : '../htdocs/',
-      },
-      paths = {
-        'ui'      : 'ui/',
-        'js'      : 'ui/js/',
-        'css'     : 'ui/css/',
-        'scss'    : 'ui/scss',
-        'fonts'   : 'ui/fonts/',
-        'img'     : 'ui/img/',
-        'inc'     : 'inc/',
-      },
-      watchfiles = [
-        // include
-        base.src + paths.css + '*.css',
-        base.src + paths.css + '**/*.css',
-        base.src + paths.js + '*.js',
-        base.src + paths.js + '**/*.js',
-        base.src + paths.img + 'sprites/*.png',
-        base.src + paths.inc + '*.inc',
-        base.src + paths.inc + '**/*.inc',
-        base.src + '*.ghtml',
-        base.src + '**/*.ghtml',
-        // ignore
-        '!' + base.src + paths.css + 'sprites.css',
-        '!' + base.src + '*.html',
-        '!' + base.src + '**/*.html',
-      ],
-      ghtmlToHTML = function(dest, src) {
-        if( /\.ghtml$/.test(src) ){
-            return dest + src.replace(/\.ghtml$/, '.html');
-        }
-      };
   grunt.initConfig({
     // VARIABLES FOR CONFIG STRING REFERENCE
-    base : base,
-    paths : paths,
+    build : require('./build-config.js')(),
 
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -55,7 +19,7 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: base.bin,
+            cwd: '<%= build.base.bin %>',
             src:[
                   "**/*.*",
                   "!**/.svn" // leaves svn directories pre-SVN 1.7
@@ -70,13 +34,13 @@ module.exports = function(grunt) {
         }
       },
       imagemin:{
-        src:'<%= base.src %><%= paths.ui %>imagemin/**'
+        src:'<%= build.base.src %><%= build.paths.ui %>imagemin/**'
       },
       htdocs:{
         files: [
           {
             expand: true,
-            cwd: base.htdocs,
+            cwd: '<%= build.base.htdocs %>',
             src:[
                   '*',
                   "!**/.svn" // leaves svn directories pre-SVN 1.7
@@ -109,40 +73,40 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: base.src,
+            cwd: '<%= build.base.src %>',
             src: [
                   '**',
                   // js and css/scss are written to bin by concat/processors
-                  '!<%= paths.css %>',
-                  '!<%= paths.css %>*',
-                  '!<%= paths.css %>**',
+                  '!<%= build.paths.css %>',
+                  '!<%= build.paths.css %>*',
+                  '!<%= build.paths.css %>**',
                   // '!ui/scss',
                   // '!ui/scss/*',
-                  '!<%= paths.js %>',
-                  '!<%= paths.js %>*',
+                  '!<%= build.paths.js %>',
+                  '!<%= build.paths.js %>*',
                   // images are copied to bin/ui/img below
-                  '!<%= paths.img %>**',
-                  '!<%= paths.ui %>imagemin/**',
-                  // includes & ghtml should be processed and are not needed in releases
-                  '!<%= paths.inc %>',
-                  '!<%= paths.inc %>/*',
+                  '!<%= build.paths.img %>**',
+                  '!<%= build.paths.ui %>imagemin/**',
+                  // includes & jade should be processed and are not needed in releases
+                  '!<%= build.paths.inc %>',
+                  '!<%= build.paths.inc %>/*',
                   '!*.inc',
                   '!**/*.inc',
-                  '!*.ghtml',
-                  '!**/*.ghtml',
-                  // processHTML/HTMLminification should write HTML files to bin
+                  '!*.jade',
+                  '!**/*.jade',
+                  // jade should write HTML files to bin
                   '!*.html',
                   '!**/*.html'
             ],
-            dest: base.bin
+            dest: '<%= build.base.bin %>'
           },
           {
             expand: true,
-            cwd: '<%= base.src %><%= paths.ui %>imagemin/',
+            cwd: '<%= build.base.src %><%= build.paths.ui %>imagemin/',
             src: [
                   '**'
             ],
-            dest: '<%= base.bin %><%= paths.img %>'
+            dest: '<%= build.base.bin %><%= build.paths.img %>'
           }
         ]
       },
@@ -150,24 +114,11 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            cwd: base.bin,
+            cwd: '<%= build.base.bin %>',
             src: [
                   '**'
             ],
-            dest: base.htdocs
-          }
-        ]
-      },
-      no_HTML_min: {
-        files: [
-          {
-            expand: true,
-            cwd: base.src,
-            src: [
-                  '**.html',
-                  '**/*.html'
-            ],
-            dest: base.bin
+            dest: '<%= build.base.htdocs %>'
           }
         ]
       }
@@ -184,10 +135,10 @@ module.exports = function(grunt) {
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     htmllint:{
       files:[
-              '<%= base.src %>*.html',
-              '<%= base.src %>**/*.html',
-              '!<%= base.src %>*.ghtml',
-              '!<%= base.src %>**/*.ghtml',
+              '<%= build.base.src %>*.html',
+              '<%= build.base.src %>**/*.html',
+              '!<%= build.base.src %>*.jade',
+              '!<%= build.base.src %>**/*.jade',
         ],
         options:{
           force: true // don't break build for SEO enfoced standards breakage
@@ -242,7 +193,7 @@ module.exports = function(grunt) {
           'vendor-prefix': false,
           'zero-units': false
         },
-        src: ['<%= base.src %>/**/*.css']
+        src: ['<%= build.base.src %>/**/*.css']
       }
   },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -281,83 +232,88 @@ module.exports = function(grunt) {
           nonstandard:true
         },
         src: [
-                '<%= base.src %>/**/*.js',
-                '!<%= base.src %><%= paths.js %>v/*.js'
+                '<%= build.base.src %>/**/*.js',
+                '!<%= build.base.src %><%= build.paths.js %>v/*.js'
              ]
       }
   },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-'||''|.
- ||   || ... ..    ...     ....    ....   ....   ....
- ||...|'  ||' '' .|  '|. .|   '' .|...|| ||. '  ||. '
- ||       ||     ||   || ||      ||      . '|.. . '|..
-.||.     .||.     '|..|'  '|...'  '|...' |'..|' |'..|'
-
-
-'||'  '||' |''||''| '||    ||' '||'
- ||    ||     ||     |||  |||   ||
- ||''''||     ||     |'|..'||   ||
- ||    ||     ||     | '|' ||   ||
-.||.  .||.   .||.   .|. | .||. .||.....|
+   '||'              '||
+    ||   ....      .. ||    ....
+    ||  '' .||   .'  '||  .|...||
+    ||  .|' ||   |.   ||  ||
+|| .|'  '|..'|'  '|..'||.  '|...'
+ '''
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
     // Create build-specific HTML
-    processhtml: {
+    jade: {
       default: {
         files: [
           {
             expand:true,
-            cwd:base.src,
+            cwd: '<%= build.base.src %>',
             src:[
-                  '*.ghtml',
-                  '**/*.ghtml'
+                  '*.jade',
+                  '**/*.jade',
+                  '!inc/*'
                 ],
-            dest:base.src,
-            rename: ghtmlToHTML // POJS function -- see var block above
+            dest: '<%= build.base.src %>',
+            ext:'.html'
+            //rename: jadeToHTML // POJS function -- see var block above
           }
         ],
         options:{
-          includeBase:base.src,
-          recursive:true
+          pretty: true,
+          data:{
+            js: '<%= build.defaults.js %>',
+            css: '<%= build.defaults.css %>'
+          }
         }
       },
       debug: {
         files: [
           {
             expand:true,
-            cwd:base.src,
+            cwd: '<%= build.base.src %>',
             src:[
-                  '*.ghtml',
-                  '**/*.ghtml'
+                  '*.jade',
+                  '**/*.jade',
+                  '!inc/*'
                 ],
-            dest:base.bin,
-            rename: ghtmlToHTML // POJS function -- see var block above
+            dest:'<%= build.base.bin %>',
+            ext: '.html'
           }
         ],
         options:{
-          includeBase:base.src,
-          recursive:true,
-          strip:true
+          pretty: true,
+          data:{
+            js: '<%= build.debug.js %>',
+            css: '<%= build.debug.css %>'
+          }
         }
       },
       release: {
         files: [
           {
             expand:true,
-            cwd:base.src,
+            cwd: '<%= build.base.src %>',
             src:[
-                  '*.ghtml',
-                  '**/*.ghtml'
+                  '*.jade',
+                  '**/*.jade',
+                  '!inc/*'
                 ],
-            dest:base.bin,
-            rename: ghtmlToHTML // POJS function -- see var block above
+            dest:'<%= build.base.bin %>',
+            ext: '.html'
           }
         ],
         options:{
-          includeBase:base.src,
-          recursive:true,
-          strip:true
+          pretty: false,
+          data:{
+            js: '<%= build.release.js %>',
+            css: '<%= build.release.css %>'
+          }
         }
       },
     },
@@ -375,13 +331,13 @@ module.exports = function(grunt) {
     sprite: {
       default: {
         // location of individual images
-        src: '<%= base.src %><%= paths.img %>sprites/*.png',
+        src: '<%= build.base.src %><%= build.paths.img %>sprites/*.png',
 
         // location of compiled sprite sheet
-        destImg: '<%= base.src %><%= paths.img %>spritesheet.png',
+        destImg: '<%= build.base.src %><%= build.paths.img %>spritesheet.png',
 
         // location on sprite CSS
-        destCSS: '<%= base.src %><%= paths.css %>sprites.css',
+        destCSS: '<%= build.base.src %><%= build.paths.css %>sprites.css',
 
         // image arrangement algorithm
         algorithm: 'diagonal',
@@ -420,7 +376,7 @@ images based factors like edge contrast and color depth specific to each image
   imagemin:{
       default:{
         files:[{
-          cwd:'<%= base.src %><%= paths.img %>',
+          cwd:'<%= build.base.src %><%= build.paths.img %>',
           expand:true,
           src:[
                 '**',
@@ -429,7 +385,7 @@ images based factors like edge contrast and color depth specific to each image
                 '!sprites/**'
           ],
           filter:'isFile',
-          dest:'<%= base.src %><%= paths.ui %>imagemin/'
+          dest:'<%= build.base.src %><%= build.paths.ui %>imagemin/'
         }],
         options:{
           optimizationlevel:3,
@@ -453,20 +409,20 @@ images based factors like edge contrast and color depth specific to each image
     // concatenate js and css files here to allow for greater control of order
     concat: {
       // JS files
-      '<%= base.bin %><%= paths.js %>app.js': [
-                                '<%= base.src %><%= paths.js %>v/*.js',
+      '<%= build.base.bin %><%= build.paths.js %>app.js': [
+                                '<%= build.base.src %><%= build.paths.js %>v/*.js',
                                 // if using require.js,
                                 // feel free to comment the below line
-                                '<%= base.src %><%= paths.js %>plugins/*.js',
-                                '<%= base.src %><%= paths.js %>/*.js'
+                                '<%= build.base.src %><%= build.paths.js %>plugins/*.js',
+                                '<%= build.base.src %><%= build.paths.js %>/*.js'
                               ],
       // css
-      '<%= base.bin %><%= paths.css %>all.css': [
-                                '<%= base.src %><%= paths.css %>reset.css',
-                                '<%= base.src %><%= paths.css %>fonts.css',
-                                '<%= base.src %><%= paths.css %>sprites.css',
-                                '<%= base.src %><%= paths.css %>*.css',
-                                '<%= base.src %><%= paths.css %>**/*.css'
+      '<%= build.base.bin %><%= build.paths.css %>all.css': [
+                                '<%= build.base.src %><%= build.paths.css %>reset.css',
+                                '<%= build.base.src %><%= build.paths.css %>fonts.css',
+                                '<%= build.base.src %><%= build.paths.css %>sprites.css',
+                                '<%= build.base.src %><%= build.paths.css %>*.css',
+                                '<%= build.base.src %><%= build.paths.css %>**/*.css'
                               ]
     },
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -483,26 +439,10 @@ images based factors like edge contrast and color depth specific to each image
       release: {
         files:[{
           expand: true,
-            cwd: '<%= base.bin %><%= paths.css %>',
+            cwd: '<%= build.base.bin %><%= build.paths.css %>',
             src: ['*.css','**/*.css'],
-            dest: '<%= base.bin %><%= paths.css %>',
+            dest: '<%= build.base.bin %><%= build.paths.css %>',
             ext: '_min.css'
-        }]
-      }
-    },
-    //Minfiy html for release ++++++++++++++++++++++
-    htmlmin:{
-      release:{
-        options:{
-          removeComments: true,
-          collapseWhitespace: true,
-          minifyCSS:true
-        },
-        files:[{
-          expand: true,
-            cwd: base.bin,
-            src: ['*.html','**/*.html'],
-            dest: base.bin
         }]
       }
     },
@@ -520,7 +460,7 @@ images based factors like edge contrast and color depth specific to each image
     uglify:{
       release: {
         files: {
-          '<%= base.bin %><%= paths.js %>app_min.js': ['<%= base.bin %><%= paths.js %>app.js']
+          '<%= build.base.bin %><%= build.paths.js %>app_min.js': ['<%= build.base.bin %><%= build.paths.js %>app.js']
         },
         options:{
           sourceMap:true
@@ -539,16 +479,16 @@ images based factors like edge contrast and color depth specific to each image
     watch:{
       // default for dev watches
       default:{
-        files: watchfiles, // POJS array used to DRY -- see var block above
+        files: '<%= build.watchfiles %>', // POJS array used to DRY -- see var block above
         tasks:['default']
       },
       // debug for non-obfuscated watches
       debug:{
-        files:watchfiles, // POJS array used to DRY -- see var block above
+        files: '<%= build.watchfiles %>', // POJS array used to DRY -- see var block above
         tasks:['debug', 'default']
       },
       release:{
-        files:watchfiles, // POJS array used to DRY -- see var block above
+        files: '<%= build.watchfiles %>', // POJS array used to DRY -- see var block above
         tasks:['release', 'default']
       }
 },
@@ -566,21 +506,21 @@ connect: {
   default: {
     options: {
       port: 3000,
-      base: base.src,
+      base: '<%= build.base.src %>',
       hostname: '*'
     }
   },
   debug: {
     options: {
       port: 3030,
-      base: base.bin,
+      base: '<%= build.base.bin %>',
       hostname: '*'
     }
   },
   release: {
     options: {
       port: 3030,
-      base: base.bin,
+      base: '<%= build.base.bin %>',
       hostname: '*'
     }
   }
@@ -599,23 +539,22 @@ connect: {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-csslint');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-htmlmin');
 
   // Third-party tasks.
-  grunt.loadNpmTasks('grunt-processhtml');
   grunt.loadNpmTasks('grunt-spritesmith');
-  grunt.loadNpmTasks('grunt-html');
+  grunt.loadNpmTasks('grunt-html'); // HTML linter
   grunt.loadNpmTasks('grunt-contrib-connect');
 
 
   grunt.registerTask('default', [
-                                  'processhtml:default',
+                                  'jade:default',
                                   'sprite',
                                   'htmllint',
                                   // css preprocessors go here
@@ -631,7 +570,7 @@ connect: {
                                   'clean:imagemin',
                                   // css preprocessors go here
                                   'concat',
-                                  'processhtml:debug'
+                                  'jade:debug'
                                 ]);
   grunt.registerTask('release', [
                                   'clean:default',
@@ -643,9 +582,7 @@ connect: {
                                   'concat',
                                   'cssmin',
                                   'uglify',
-                                  'processhtml:release',
-                                  // toggle comments to add/remove HTML minification (for Wes)
-                                  'htmlmin:release',
+                                  'jade:release',
                                   // uncomment below to build to htdocs in SVN filescheme
                                   // 'clean:htdocs',
                                   //'copy:to_htdocs'
